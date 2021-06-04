@@ -1,8 +1,12 @@
 <resources>
-    <string name="app_name">AppFilm</string>
-    <string name="title">Movie Streaming App</string>
+    <string name="app_name">Moviee</string>
+    <string name="title">Moviee App</string>
     <string name="login_greeting">Xin chào</string>
     <string name="login_greeting_subtitle">Đăng nhập vào tài khoản của bạn</string>
     <string name="sign_up_greeting">Tạo tài khoản</string>
     <string name="loginErrMsg">Email hoặc mật khẩu không đúng</string>
+    <string name="description_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus auctor erat augue, eget commodo tortor ullamcorper sit amet. Sed elementum metus in lorem rutrum, quis ullamcorper nisi semper. Nulla condimentum interdum vulputate. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Cras cursus, leo nec suscipit scelerisque, neque dui convallis metus, eu vestibulum enim est et mauris. Suspendisse tempus arcu non metus mattis, sed rhoncus enim vulputate. Aliquam quis arcu augue. Morbi pulvinar porttitor leo. Duis in egestas dui, molestie hendrerit arcu. Nulla ac feugiat risus. Curabitur aliquam lacus lorem, et ultricies mauris lobortis quis. Aenean id odio fringilla ante facilisis condimentum at ac ex. Quisque a odio consequat est varius rhoncus vel pharetra turpis.</string>
+    <string name="search_empty">Không tìm thấy gì hết!</string>
+    <string name="genre_list_title">Danh sách thể loại</string>
+    <string name="comment_title">Bình luận</string>
 </resources>

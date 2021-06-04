@@ -31,7 +31,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView toSignUp, loginErrMsg;;
     private Button logInBtn;
 
-    // cho cái dialog xoay tròn luc login nữa là ok
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

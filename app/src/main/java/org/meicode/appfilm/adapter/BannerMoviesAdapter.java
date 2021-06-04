@@ -15,16 +15,17 @@ import com.bumptech.glide.Glide;
 import org.meicode.appfilm.MovieDetailsActivity;
 import org.meicode.appfilm.R;
 import org.meicode.appfilm.model.BannerMovie;
+import org.meicode.appfilm.model.Movie;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BannerMoviesAdapter extends PagerAdapter {
     Context cont;
-    ArrayList<BannerMovie> BannerList;
+    List<Movie> BannerList;
 
-    public BannerMoviesAdapter(Context cont, ArrayList<BannerMovie> bannerList) {
+    public BannerMoviesAdapter(Context cont) {
         this.cont = cont;
-        BannerList = bannerList;
     }
 
     @Override
@@ -42,24 +43,32 @@ public class BannerMoviesAdapter extends PagerAdapter {
         container.removeView((View) object);
     }
 
+    public void setBannerList(List<Movie> list) {
+        BannerList = list;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         View view = LayoutInflater.from(cont).inflate(R.layout.banner_movies,null);
         ImageView imgBanner = view.findViewById(R.id.banner_img);
         Glide.with(cont)
-                .load(BannerList.get(position).getImgUrl())
-                .fitCenter()
+                .load(BannerList.get(position).getPoster())
+                .centerCrop()
                 .into(imgBanner);
         container.addView(view);
         imgBanner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Movie movie = BannerList.get(position);
                 Intent i = new Intent(cont, MovieDetailsActivity.class);
-                i.putExtra("movieId",BannerList.get(position).getId());
-                i.putExtra("movieName",BannerList.get(position).getMovieName());
-                i.putExtra("movieImageUrl",BannerList.get(position).getImgUrl());
-                i.putExtra("movieFile",BannerList.get(position).getFileUrl());
+                i.putExtra("movieId",movie.getId());
+                i.putExtra("movieName",movie.getTitle());
+                i.putExtra("movieImageUrl",movie.getPoster());
+                i.putExtra("movieFile",movie.getFileUrl());
+                i.putExtra("movieDescription",movie.getDescription());
+                i.putExtra("movieRate", String.valueOf(movie.getRated()));
                 cont.startActivity(i);
             }
         });

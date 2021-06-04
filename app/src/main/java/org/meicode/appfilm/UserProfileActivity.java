@@ -35,10 +35,10 @@ public class UserProfileActivity extends AppCompatActivity {
         initUserInfo();
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            SharedPreferences loginSharedPreferences = getApplicationContext().getSharedPreferences("isLoggedIn", MODE_PRIVATE);
+            Boolean isLoggin = loginSharedPreferences.getBoolean("isLoggedIn", false);
             switch (item.getItemId()) {
                 case R.id.menu_item_acc:
-                    SharedPreferences loginSharedPreferences = getApplicationContext().getSharedPreferences("isLoggedIn", MODE_PRIVATE);
-                    Boolean isLoggin = loginSharedPreferences.getBoolean("isLoggedIn", false);
                     if(isLoggin) {
                         Intent userProfileIntent = new Intent(this, UserProfileActivity.class);
                         startActivity(userProfileIntent);
@@ -50,7 +50,13 @@ public class UserProfileActivity extends AppCompatActivity {
                     startActivity(new Intent(this, MainActivity.class));
                     return true;
                 case R.id.menu_item_fav:
-                    Toast.makeText(this,"Favorite clicked", Toast.LENGTH_SHORT).show();
+                    if (isLoggin) {
+                        // neu da dang nhap
+                        Intent userProfileIntent = new Intent(this, FavoriteListActivity.class);
+                        startActivity(userProfileIntent);
+                    } else {
+                        startActivity(new Intent(this, LoginActivity.class));
+                    }
                     return true;
                 default:
                     return false;

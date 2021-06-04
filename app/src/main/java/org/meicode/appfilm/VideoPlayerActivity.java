@@ -3,6 +3,7 @@ package org.meicode.appfilm;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.media.browse.MediaBrowser;
 import android.net.Uri;
 import android.os.Bundle;
@@ -59,6 +60,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
     int currentWindow = 0;
     long playbackPosition = 0;
 
+    private String url;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,12 +72,10 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         playerV = findViewById(R.id.player);
         progressBar = findViewById(R.id.progress_bar);
-        String url = getIntent().getStringExtra("url");
-        if(url.contains("youtube")) {
-            setUpPlayerYoutube(url);
-        } else {
-            setUpPlayerExo(url);
-        }
+        url = getIntent().getStringExtra("url");
+
+        setUpPlayer();
+
         SimExo.addListener(new Player.EventListener() {
             @Override
             public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
@@ -132,6 +133,15 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void setUpPlayer() {
+        if(url.contains("youtube")) {
+            setUpPlayerYoutube(url);
+        } else {
+            setUpPlayerExo(url);
+        }
+    }
+
     private void setUpPlayerExo(String url){
         LoadControl Load = new DefaultLoadControl();
 //        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
@@ -145,6 +155,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         SimExo.prepare();
         SimExo.setPlayWhenReady(true);
     }
+    @SuppressLint("StaticFieldLeak")
     private void setUpPlayerYoutube(String url) {
         SimExo = new SimpleExoPlayer.Builder(this).build();
         playerV.setPlayer(SimExo);
@@ -152,7 +163,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
             @Override
             protected void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta videoMeta) {
                 if(ytFiles != null) {
-                    int videoTag = 137; //video tag for 1080p MP4
+                    int videoTag = 22; //video tag for 720p MP4
                     int audioTag = 140; //Audio tag for m4a
                     MediaSource audioSrc = new ProgressiveMediaSource
                             .Factory(new DefaultHttpDataSource.Factory())

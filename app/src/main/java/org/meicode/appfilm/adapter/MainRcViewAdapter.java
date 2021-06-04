@@ -5,25 +5,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.meicode.appfilm.R;
-import org.meicode.appfilm.model.AllCategory;
-import org.meicode.appfilm.model.CategoryItem;
+import org.meicode.appfilm.model.MovieCategory;
+import org.meicode.appfilm.model.Movie;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class MainRcViewAdapter extends RecyclerView.Adapter<MainRcViewAdapter.MainViewHolder> {
     Context cont;
-    ArrayList<AllCategory> CateList;
+    List<MovieCategory> CategoryList;
 
-    public MainRcViewAdapter(Context cont, ArrayList<AllCategory> cateList) {
+    public MainRcViewAdapter(Context cont, List<MovieCategory> cateList) {
         this.cont = cont;
-        CateList = cateList;
+        CategoryList = cateList;
     }
 
     @NonNull
@@ -34,26 +33,30 @@ public class MainRcViewAdapter extends RecyclerView.Adapter<MainRcViewAdapter.Ma
 
     @Override
     public void onBindViewHolder(@NonNull MainViewHolder holder, int position) {
-        holder.CateName.setText(CateList.get(position).getCategoryTitle());
-        setItemRecycler(holder.itemRcView, CateList.get(position).getCateItemm());
+        holder.CateName.setText(CategoryList.get(position).getCategoryTitle());
+        setItemRecycler(holder.itemRcView, CategoryList.get(position).getCateItemm());
     }
 
     @Override
     public int getItemCount() {
-        return CateList.size();
+        return CategoryList.size();
     }
+
     public static final class MainViewHolder extends RecyclerView.ViewHolder{
         TextView CateName;
         RecyclerView itemRcView;
         public MainViewHolder(@NonNull View itemView) {
             super(itemView);
+            initViews();
+        }
+
+        private void initViews() {
             CateName = (TextView) itemView.findViewById(R.id.itemCate);
             itemRcView = (RecyclerView) itemView.findViewById(R.id.item_rcView);
-
         }
     }
-    private void setItemRecycler(RecyclerView rcView, ArrayList<CategoryItem> ItemCate){
-        ItemRcViewAdapter itemAdapter = new ItemRcViewAdapter(cont,ItemCate);
+    private void setItemRecycler(RecyclerView rcView, List<Movie> ItemCate){
+        ItemRcViewAdapter itemAdapter = new ItemRcViewAdapter(cont, ItemCate);
         rcView.setLayoutManager(new LinearLayoutManager(cont,RecyclerView.HORIZONTAL,false));
         rcView.setAdapter(itemAdapter);
     }

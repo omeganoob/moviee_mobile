@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/favorite_item"
+    app:cardCornerRadius="10dp"
+    android:layout_marginBottom="10dp"
+    android:backgroundTint="#2A3640">
+    <RelativeLayout
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/poster_card"
+            android:layout_width="wrap_content"
+            app:cardCornerRadius="10dp"
+            app:strokeColor="@color/themeColor"
+            app:strokeWidth="2dp"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/favorite_item_poster"
+                android:src="@drawable/ic_launcher_background"
+                android:layout_width="80dp"
+                android:layout_height="80dp"/>
+        </com.google.android.material.card.MaterialCardView>
+        <TextView
+            android:id="@+id/favorite_item_title"
+            android:layout_marginStart="10dp"
+            android:textSize="24sp"
+            android:maxWidth="200dp"
+            android:textFontWeight="600"
+            android:fontFamily="@font/josefinsans"
+            android:textColor="@color/themeColor"
+            android:layout_toEndOf="@+id/poster_card"
+            android:text="Movie Name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <ImageButton
+            android:id="@+id/favorite_item_start_btn"
+            android:background="#00FFFFFF"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/btn_start"
+            android:layout_marginEnd="20dp"
+            android:layout_alignParentEnd="true"/>
+
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

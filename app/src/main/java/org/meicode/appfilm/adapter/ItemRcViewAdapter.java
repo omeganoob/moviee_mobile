@@ -15,15 +15,16 @@ import com.bumptech.glide.Glide;
 
 import org.meicode.appfilm.MovieDetailsActivity;
 import org.meicode.appfilm.R;
-import org.meicode.appfilm.model.CategoryItem;
+import org.meicode.appfilm.model.Movie;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ItemRcViewAdapter extends RecyclerView.Adapter<ItemRcViewAdapter.ItemViewHolder> {
     Context cont;
-    ArrayList<CategoryItem> ItemList;
+    List<Movie> ItemList;
 
-    public ItemRcViewAdapter(Context cont, ArrayList<CategoryItem> itemList) {
+    public ItemRcViewAdapter(Context cont, List<Movie> itemList) {
         this.cont = cont;
         ItemList = itemList;
     }
@@ -36,17 +37,19 @@ public class ItemRcViewAdapter extends RecyclerView.Adapter<ItemRcViewAdapter.It
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-        CategoryItem item = ItemList.get(position);
-        holder.itemTitle.setText(item.getMovieName());
-        Glide.with(cont).load(item.getImgUrl()).into(holder.itemImg);
+        Movie movie = ItemList.get(position);
+        holder.itemTitle.setText(movie.getTitle());
+        Glide.with(cont).load(movie.getPoster()).into(holder.itemImg);
         holder.itemImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(cont, MovieDetailsActivity.class);
-                i.putExtra("movieId",item.getId());
-                i.putExtra("movieName",item.getMovieName());
-                i.putExtra("movieImageUrl",item.getImgUrl());
-                i.putExtra("movieFile",item.getFileUrl());
+                i.putExtra("movieId",movie.getId());
+                i.putExtra("movieName",movie.getTitle());
+                i.putExtra("movieImageUrl",movie.getPoster());
+                i.putExtra("movieFile",movie.getFileUrl());
+                i.putExtra("movieDescription",movie.getDescription());
+                i.putExtra("movieRate", String.valueOf(movie.getRated()));
                 cont.startActivity(i);
             }
         });

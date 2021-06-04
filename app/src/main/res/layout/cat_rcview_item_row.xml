@@ -30,6 +30,7 @@
             android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true"
             android:padding="5dp"
+            android:fontFamily="@font/josefinsans"
             android:background="@color/themeDark80"
             android:textColor="@color/themeColor"
             android:text="Movie Title"

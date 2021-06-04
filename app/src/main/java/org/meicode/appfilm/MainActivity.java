@@ -1,7 +1,10 @@
 package org.meicode.appfilm;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.ui.AppBarConfiguration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -10,101 +13,77 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import org.jetbrains.annotations.NotNull;
 import org.meicode.appfilm.adapter.BannerMoviesAdapter;
 import org.meicode.appfilm.adapter.MainRcViewAdapter;
-import org.meicode.appfilm.model.AllCategory;
-import org.meicode.appfilm.model.BannerMovie;
-import org.meicode.appfilm.model.CategoryItem;
+import org.meicode.appfilm.model.MovieCategory;
+import org.meicode.appfilm.model.Movie;
+import org.meicode.appfilm.model.User;
+import org.meicode.appfilm.retrofitresponse.MovieResponse;
+import org.meicode.appfilm.retrofitresponse.UserResponse;
+import org.meicode.appfilm.retrofitservices.MovieService;
+import org.meicode.appfilm.retrofitservices.UserService;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public class MainActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener{
 
     BottomNavigationView bottomNavigationView;
+    FloatingActionButton fab;
 
     BannerMoviesAdapter AdapterBanner;
-    TabLayout IncaditorTab , categoryTab ;
+    TabLayout IndicatorTab, categoryTab;
     ViewPager banner;
-    ArrayList<BannerMovie> HomeBannerList;
-    ArrayList<BannerMovie> TvShowsBannerList;
-    ArrayList<BannerMovie> MovieBannerList;
-    ArrayList<BannerMovie> KidsBannerList;
+    List<Movie> HomeBannerList;
+    List<Movie> TvShowsBannerList;
+    List<Movie> MovieBannerList;
+    List<Movie> KidsBannerList;
 
     MainRcViewAdapter AdapterRcView;
     RecyclerView MainRcView;
-    ArrayList<AllCategory> CateList;
+    List<MovieCategory> CategoryList;
     NestedScrollView nestedScroll;
     AppBarLayout appBar;
+
+    List<Movie> TopRatedList, PopularList, NewestList, CartoonList;
+
+    private AppBarConfiguration mAppBarConfiguration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         initViews();
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.menu_item_acc:
-                    SharedPreferences loginSharedPreferences = getApplicationContext().getSharedPreferences("isLoggedIn", MODE_PRIVATE);
-                    Boolean isLoggin = loginSharedPreferences.getBoolean("isLoggedIn", false);
-                    if(isLoggin) {
-                        // neu da dang nhap
-                        Intent userProfileIntent = new Intent(this, UserProfileActivity.class);
-                        startActivity(userProfileIntent);
-                    } else {
-                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                    }
-                    return true;
-                case R.id.menu_item_home:
-                    Toast.makeText(this, "Home clicked", Toast.LENGTH_SHORT).show();
-                    return true;
-                case R.id.menu_item_fav:
-                    Toast.makeText(this,"Favorite clicked", Toast.LENGTH_SHORT).show();
-                    return true;
-                default:
-                    return false;
-            }
+        setUpNavigationDrawer();
+        setUpBottomNavigation();
+        setUpBannerList();
+        setUpCatMovieList();
+
+        fab.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SearchActivity.class);
+            startActivity(intent);
         });
 
-//Home
-        HomeBannerList = new ArrayList<>();
-        HomeBannerList.add(new BannerMovie( 1,"Đấu la đại lục","https://i0.wp.com/img.media3s.xyz/image/2021/01/dau-la-dai-luc.jpg", "https://drive.google.com/uc?export=download&id=14qvF_7NmoVbH1lXGJYglTPKzjdF5t7u7"));
-        HomeBannerList.add(new BannerMovie( 2,"One Piece","https://i0.wp.com/img.media3s.xyz/image/2018/05/one-piece-vua-hai-tac.jpg", "https://www.youtube.com/watch?v=52c8H4l9UkM"));
-        HomeBannerList.add(new BannerMovie( 3,"Naruto","https://i0.wp.com/img.media3s.xyz/image/2016/05/naruto-suc-manh-vi-thu.jpg", "https://www.youtube.com/watch?v=52c8H4l9UkM"));
-        HomeBannerList.add(new BannerMovie( 4,"Thanh gươm diệt quỷ","https://i0.wp.com/img.media3s.xyz/image/2021/05/thanh-guom-diet-quy-chuyen-tau-vo-tan.jpg", "https://www.youtube.com/watch?v=52c8H4l9UkM"));
-        HomeBannerList.add(new BannerMovie( 5,"86","https://i0.wp.com/img.media3s.xyz/image/2021/04/86.jpg", ""));
-
-//TvShows
-        TvShowsBannerList = new ArrayList<>();
-        TvShowsBannerList.add(new BannerMovie( 1,"Running Man","https://static.fptplay.net/static/img/share/video/18_06_2020/running-man-thu-thach-than-tuong-fpt-play18-06-2020_15g28-27.jpg?w=282&mode=scale", ""));
-        TvShowsBannerList.add(new BannerMovie( 2,"Bạn muốn hẹn hò","https://static.fptplay.net/static/img/share/video/18_06_2020/running-man-thu-thach-than-tuong-fpt-play18-06-2020_15g28-27.jpg?w=282&mode=scale", ""));
-        TvShowsBannerList.add(new BannerMovie( 3,"Góc nhìn","https://static.fptplay.net/static/img/share/video/07_05_2021/fpt_play_banner_1920x108007-05-2021_10g41-54.jpg?w=282&mode=scale", ""));
-        TvShowsBannerList.add(new BannerMovie( 4,"Running Man","https://static.fptplay.net/static/img/share/video/18_06_2020/running-man-thu-thach-than-tuong-fpt-play18-06-2020_15g28-27.jpg?w=282&mode=scale", ""));
-        TvShowsBannerList.add(new BannerMovie( 5,"Running Man","https://static.fptplay.net/static/img/share/video/18_06_2020/running-man-thu-thach-than-tuong-fpt-play18-06-2020_15g28-27.jpg?w=282&mode=scale", ""));
- //Movie
-        MovieBannerList = new ArrayList<>();
-        MovieBannerList.add(new BannerMovie( 1,"Bẫy thời gian","https://static.fptplay.net/static/img/share/video/13_02_2020/3ntlh2hpoujej1uzn6hrelzr5nv13-02-2020_22g04-42.jpg?w=282&mode=scale&fmt=webp", ""));
-        MovieBannerList.add(new BannerMovie( 2,"Bạn muốn hẹn hò","https://static.fptplay.net/static/img/share/video/13_02_2020/3ntlh2hpoujej1uzn6hrelzr5nv13-02-2020_22g04-42.jpg?w=282&mode=scale&fmt=webp", ""));
-        MovieBannerList.add(new BannerMovie( 3,"Góc nhìn","https://static.fptplay.net/static/img/share/video/13_02_2020/3ntlh2hpoujej1uzn6hrelzr5nv13-02-2020_22g04-42.jpg?w=282&mode=scale&fmt=webp", ""));
-        MovieBannerList.add(new BannerMovie( 4,"Running Man","https://static.fptplay.net/static/img/share/video/13_02_2020/3ntlh2hpoujej1uzn6hrelzr5nv13-02-2020_22g04-42.jpg?w=282&mode=scale&fmt=webp", ""));
-        MovieBannerList.add(new BannerMovie( 5,"Running Man","https://static.fptplay.net/static/img/share/video/13_02_2020/3ntlh2hpoujej1uzn6hrelzr5nv13-02-2020_22g04-42.jpg?w=282&mode=scale&fmt=webp", ""));
-//Kids
-        KidsBannerList = new ArrayList<>();
-        KidsBannerList.add(new BannerMovie( 1,"Đấu la đại lục","https://i0.wp.com/img.media3s.xyz/image/2021/01/dau-la-dai-luc.jpg", ""));
-        KidsBannerList.add(new BannerMovie( 2,"One Piece","https://i0.wp.com/img.media3s.xyz/image/2018/05/one-piece-vua-hai-tac.jpg", ""));
-        KidsBannerList.add(new BannerMovie( 3,"Naruto","https://i0.wp.com/img.media3s.xyz/image/2016/05/naruto-suc-manh-vi-thu.jpg", ""));
-        KidsBannerList.add(new BannerMovie( 4,"Thanh gươm diệt quỷ","https://i0.wp.com/img.media3s.xyz/image/2021/05/thanh-guom-diet-quy-chuyen-tau-vo-tan.jpg", ""));
-        KidsBannerList.add(new BannerMovie( 5,"86","https://i0.wp.com/img.media3s.xyz/image/2021/04/86.jpg", ""));
-        setAdapterBanner(HomeBannerList);
         categoryTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -126,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                         setAdapterBanner(HomeBannerList);
                 }
             }
+
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
 
@@ -136,88 +116,384 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        CategoryList = getCateList();
+        setAdapterRcView(CategoryList);
+    }
+
+    private void setUpBottomNavigation() {
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            SharedPreferences loginSharedPreferences = getApplicationContext().getSharedPreferences("isLoggedIn", MODE_PRIVATE);
+            Boolean isLoggin = loginSharedPreferences.getBoolean("isLoggedIn", false);
+            switch (item.getItemId()) {
+                case R.id.menu_item_acc:
+                    if (isLoggin) {
+                        // neu da dang nhap
+                        Intent userProfileIntent = new Intent(this, UserProfileActivity.class);
+                        startActivity(userProfileIntent);
+                    } else {
+                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                    }
+                    return true;
+                case R.id.menu_item_home:
+                    Toast.makeText(this, "Bạn đang ở đây rồi", Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.menu_item_fav:
+                    if (isLoggin) {
+                        // neu da dang nhap
+                        Intent userProfileIntent = new Intent(this, FavoriteListActivity.class);
+                        startActivity(userProfileIntent);
+                    } else {
+                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                    }
+                    return true;
+                default:
+                    return false;
+            }
+        });
+    }
+
+    private void setUpNavigationDrawer() {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        mAppBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.menu_item_home, R.id.menu_item_fav, R.id.menu_item_acc, R.id.menu_item_genre)
+                .setOpenableLayout(drawer)
+                .build();
+    }
+
+    private void setUpCatMovieList() {
         //ItemHome1
-        ArrayList<CategoryItem> homeCatListItem1 = new ArrayList<>();
-        homeCatListItem1.add(new CategoryItem(1,"Running Man","https://i0.wp.com/img.media3s.xyz/image/2018/06/running-man.jpg",""));
-        homeCatListItem1.add(new CategoryItem(2,"Boruto","https://i0.wp.com/img.media3s.xyz/image/2017/04/boruto-naruto-the-he-tiep-theo.jpg",""));
-        homeCatListItem1.add(new CategoryItem(3,"Trường Ca Hành","https://i0.wp.com/img.media3s.xyz/image/2021/03/truong-ca-hanh.jpg",""));
-        homeCatListItem1.add(new CategoryItem(4,"Kính Song Thành","https://i0.wp.com/img.media3s.xyz/image/2021/03/kinh-song-thanh.jpg",""));
-        homeCatListItem1.add(new CategoryItem(5,"Dư Sinh","https://i0.wp.com/img.media3s.xyz/image/2020/12/du-sinh.jpg",""));
+        setTopRatedList();
         //ItemHome2
-        ArrayList<CategoryItem> homeCatListItem2 = new ArrayList<>();
-        homeCatListItem2.add(new CategoryItem(1,"Running Man","https://i0.wp.com/img.media3s.xyz/image/2018/06/running-man.jpg",""));
-        homeCatListItem2.add(new CategoryItem(2,"Boruto","https://i0.wp.com/img.media3s.xyz/image/2017/04/boruto-naruto-the-he-tiep-theo.jpg",""));
-        homeCatListItem2.add(new CategoryItem(3,"Trường Ca Hành","https://i0.wp.com/img.media3s.xyz/image/2021/03/truong-ca-hanh.jpg",""));
-        homeCatListItem2.add(new CategoryItem(4,"Kính Song Thành","https://i0.wp.com/img.media3s.xyz/image/2021/03/kinh-song-thanh.jpg",""));
-        homeCatListItem2.add(new CategoryItem(5,"Dư Sinh","https://i0.wp.com/img.media3s.xyz/image/2020/12/du-sinh.jpg",""));
+        setPopularList();
         //ItemHome3
-        ArrayList<CategoryItem> homeCatListItem3 = new ArrayList<>();
-        homeCatListItem3.add(new CategoryItem(1,"Running Man","https://i0.wp.com/img.media3s.xyz/image/2018/06/running-man.jpg",""));
-        homeCatListItem3.add(new CategoryItem(2,"Boruto","https://i0.wp.com/img.media3s.xyz/image/2017/04/boruto-naruto-the-he-tiep-theo.jpg",""));
-        homeCatListItem3.add(new CategoryItem(3,"Trường Ca Hành","https://i0.wp.com/img.media3s.xyz/image/2021/03/truong-ca-hanh.jpg",""));
-        homeCatListItem3.add(new CategoryItem(4,"Kính Song Thành","https://i0.wp.com/img.media3s.xyz/image/2021/03/kinh-song-thanh.jpg",""));
-        homeCatListItem3.add(new CategoryItem(5,"Dư Sinh","https://i0.wp.com/img.media3s.xyz/image/2020/12/du-sinh.jpg",""));
+        setNewestList();
         //ItemHome4
-        ArrayList<CategoryItem> homeCatListItem4 = new ArrayList<>();
-        homeCatListItem4.add(new CategoryItem(1,"Tokyo Revenger","https://i0.wp.com/img.media3s.xyz/image/2021/04/tokyo-revengers.jpg",""));
-        homeCatListItem4.add(new CategoryItem(2,"Boruto","https://i0.wp.com/img.media3s.xyz/image/2017/04/boruto-naruto-the-he-tiep-theo.jpg",""));
-        homeCatListItem4.add(new CategoryItem(3,"Trường Ca Hành","https://i0.wp.com/img.media3s.xyz/image/2021/03/truong-ca-hanh.jpg",""));
-        homeCatListItem4.add(new CategoryItem(4,"Kính Song Thành","https://i0.wp.com/img.media3s.xyz/image/2021/03/kinh-song-thanh.jpg",""));
-        homeCatListItem4.add(new CategoryItem(5,"Dư Sinh","https://i0.wp.com/img.media3s.xyz/image/2020/12/du-sinh.jpg",""));
+        setCartoonList();
+    }
 
+    private void setNewestList() {
+        NewestList = new ArrayList<>();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        retrofit.create(MovieService.class).getNewest()
+                .enqueue(new Callback<MovieResponse>() {
+                    @Override
+                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                        if(response.isSuccessful()) {
+                            assert response.body() != null;
+                            if (response.body().getMovies().size() > 0) {
+                                NewestList.addAll(response.body().getMovies());
+                                Log.d("NewestList", String.valueOf(NewestList.size()));
+                            }
+                            AdapterBanner.notifyDataSetChanged();
+                        }
+                    }
 
-        CateList = new ArrayList<>();
-        CateList.add(new AllCategory(1,"PHIM ĐỀ CỬ", homeCatListItem1));
-        CateList.add(new AllCategory(2,"PHIM LẺ MỚI CẬP NHẬT",homeCatListItem2));
-        CateList.add(new AllCategory(3,"PHIM BỘ MỚI CẬP NHẬT",homeCatListItem3));
-        CateList.add(new AllCategory(4,"PHIM HOẠT HÌNH",homeCatListItem4));
-        setAdapterRcView(CateList);
+                    @Override
+                    public void onFailure(Call<MovieResponse> call, Throwable t) {
+
+                    }
+
+                });
+    }
+
+    private void setPopularList() {
+        PopularList = new ArrayList<>();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        retrofit.create(MovieService.class).getPopular()
+                .enqueue(new Callback<MovieResponse>() {
+                    @Override
+                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                        if(response.isSuccessful()) {
+                            assert response.body() != null;
+                            if (response.body().getMovies().size() > 0) {
+                                PopularList.addAll(response.body().getMovies());
+                                Log.d("PopularList", String.valueOf(PopularList.size()));
+                            }
+                            AdapterBanner.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MovieResponse> call, Throwable t) {
+
+                    }
+
+                });
+    }
+
+    private void setCartoonList() {
+        CartoonList = new ArrayList<>();
+        Retrofit retrofit = new Retrofit.Builder()
+                                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build();
+        retrofit.create(MovieService.class).getMovieWithGenre(4)
+                .enqueue(new Callback<MovieResponse>() {
+                    @Override
+                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                        if(response.isSuccessful()) {
+                            assert response.body() != null;
+                            if (response.body().getMovies().size() > 0) {
+                                CartoonList.addAll(response.body().getMovies());
+                                Log.d("HomeBannerList", String.valueOf(CartoonList.size()));
+                            }
+                            AdapterRcView.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MovieResponse> call, Throwable t) {
+
+                    }
+                });
+    }
+
+    private void setTopRatedList() {
+        TopRatedList = new ArrayList<>();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        retrofit.create(MovieService.class).getTopRated()
+                .enqueue(new Callback<MovieResponse>() {
+                    @Override
+                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                        if(response.isSuccessful()) {
+                            assert response.body() != null;
+                            if (response.body().getMovies().size() > 0) {
+                                TopRatedList.addAll(response.body().getMovies());
+                                Log.d("TopRatedList", String.valueOf(TopRatedList.size()));
+                            }
+                            AdapterBanner.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MovieResponse> call, Throwable t) {
+
+                    }
+
+                });
+    }
+
+    private List<MovieCategory> getCateList() {
+        List<MovieCategory> list = new ArrayList<>();
+        list.add(new MovieCategory(1, "PHIM ĐỀ CỬ", TopRatedList));
+        list.add(new MovieCategory(2, "PHIM PHỔ BIẾN", PopularList));
+        list.add(new MovieCategory(3, "PHIM MỚI CẬP NHẬT", NewestList));
+        list.add(new MovieCategory(4, "PHIM HOẠT HÌNH", CartoonList));
+        return list;
+    }
+
+    private void setUpBannerList() {
+        //Home
+        setHomeBannerList();
+        setTvShowsBannerList();
+        setMovieBannerList();
+        setKidsBannerList();
+        setAdapterBanner(HomeBannerList);
+    }
+
+    private void setKidsBannerList() {
+        KidsBannerList = new ArrayList<>();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        retrofit.create(MovieService.class).getMovieByAge(9)
+                .enqueue(new Callback<MovieResponse>() {
+                    @Override
+                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                        if(response.isSuccessful()) {
+                            assert response.body() != null;
+                            if (response.body().getMovies().size() > 0) {
+                                KidsBannerList.addAll(response.body().getMovies());
+                                Log.d("KidsBannerList", String.valueOf(KidsBannerList.size()));
+                            }
+                            AdapterBanner.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MovieResponse> call, Throwable t) {
+
+                    }
+
+                });
+    }
+
+    private void setMovieBannerList() {
+        MovieBannerList = new ArrayList<>();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        retrofit.create(MovieService.class).getOnlyMovie()
+                .enqueue(new Callback<MovieResponse>() {
+                    @Override
+                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                        if(response.isSuccessful()) {
+                            assert response.body() != null;
+                            if (response.body().getMovies().size() > 0) {
+                                MovieBannerList.addAll(response.body().getMovies());
+                                Log.d("MovieBannerList", String.valueOf(MovieBannerList.size()));
+                            }
+                            AdapterBanner.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MovieResponse> call, Throwable t) {
+
+                    }
+                });
+    }
+
+    private void setTvShowsBannerList() {
+        TvShowsBannerList = new ArrayList<>();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        retrofit.create(MovieService.class).getTvShows()
+                .enqueue(new Callback<MovieResponse>() {
+                    @Override
+                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                        if(response.isSuccessful()) {
+                            assert response.body() != null;
+                            if (response.body().getMovies().size() > 0) {
+                                TvShowsBannerList.addAll(response.body().getMovies());
+                                Log.d("TvShowsBannerList", String.valueOf(TvShowsBannerList.size()));
+                            }
+                            AdapterBanner.notifyDataSetChanged();
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<MovieResponse> call, Throwable t) {
+
+                    }
+                });
+
+    }
+
+    private void setHomeBannerList() {
+        HomeBannerList = new ArrayList<>();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        retrofit.create(MovieService.class).getMovies()
+                .enqueue(new Callback<MovieResponse>() {
+                    @Override
+                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                        if(response.isSuccessful()) {
+                            assert response.body() != null;
+                            if (response.body().getMovies().size() > 0) {
+                                HomeBannerList.addAll(response.body().getMovies());
+                                Log.d("HomeBannerList", String.valueOf(HomeBannerList.size()));
+                            }
+                            AdapterBanner.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MovieResponse> call, Throwable t) {
+
+                    }
+
+                });
     }
 
     private void initViews() {
-        IncaditorTab = findViewById(R.id.indicator);
+        fab = findViewById(R.id.toSearchMovie);
+        IndicatorTab = findViewById(R.id.indicator);
         categoryTab = findViewById(R.id.tabLayout);
         nestedScroll = findViewById(R.id.nested_Scroll);
         appBar = findViewById(R.id.appbar);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
     }
 
-    private void setAdapterBanner(ArrayList<BannerMovie> bannerList){
+    private void setAdapterBanner(List<Movie> bannerList) {
         banner = findViewById(R.id.banner_viewPager);
-        AdapterBanner = new BannerMoviesAdapter(this, bannerList);
+        AdapterBanner = new BannerMoviesAdapter(this);
+        AdapterBanner.setBannerList(bannerList);
         banner.setAdapter(AdapterBanner);
-        IncaditorTab.setupWithViewPager(banner);
+        IndicatorTab.setupWithViewPager(banner);
         Timer slider = new Timer();
-        slider.scheduleAtFixedRate(new AutoSlider(), 4000,6000);
-        IncaditorTab.setupWithViewPager(banner,true);
+        slider.scheduleAtFixedRate(new AutoSlider(), 4000, 6000);
+        IndicatorTab.setupWithViewPager(banner, true);
     }
-    class AutoSlider extends TimerTask{
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
+        SharedPreferences loginSharedPreferences = getApplicationContext().getSharedPreferences("isLoggedIn", MODE_PRIVATE);
+        Boolean isLoggin = loginSharedPreferences.getBoolean("isLoggedIn", false);
+        switch (item.getItemId()) {
+            case R.id.menu_item_home:
+                startActivity(new Intent(this, MainActivity.class));
+                break;
+            case R.id.menu_item_fav:
+                if (isLoggin) {
+                    // neu da dang nhap
+                    Intent userProfileIntent = new Intent(this, FavoriteListActivity.class);
+                    startActivity(userProfileIntent);
+                } else {
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                }
+                break;
+            case R.id.menu_item_acc:
+                if (isLoggin) {
+                    // neu da dang nhap
+                    Intent userProfileIntent = new Intent(this, UserProfileActivity.class);
+                    startActivity(userProfileIntent);
+                } else {
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                }
+                break;
+            case R.id.menu_item_genre:
+                Intent intent = new Intent(this, GenreListActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return true;
+    }
+
+    class AutoSlider extends TimerTask {
 
         @Override
         public void run() {
-            MainActivity.this.runOnUiThread(new Runnable(){
+            MainActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(banner.getCurrentItem() < HomeBannerList.size() - 1 ){
+                    if (banner.getCurrentItem() < HomeBannerList.size() - 1) {
                         banner.setCurrentItem(banner.getCurrentItem() + 1);
-                    }
-                    else{
+                    } else {
                         banner.setCurrentItem(0);
                     }
                 }
             });
         }
     }
-    public void setAdapterRcView(ArrayList<AllCategory> List){
+
+    public void setAdapterRcView(List<MovieCategory> CateList) {
         MainRcView = findViewById(R.id.main_rcview);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL,false);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         MainRcView.setLayoutManager(layoutManager);
-        AdapterRcView = new MainRcViewAdapter(this,List);
+        AdapterRcView = new MainRcViewAdapter(this, CateList);
         MainRcView.setAdapter(AdapterRcView);
     }
-    private void setScrollDefaultState(){
+
+    private void setScrollDefaultState() {
         nestedScroll.fullScroll(View.FOCUS_UP);
-        nestedScroll.scrollTo(0,0);
+        nestedScroll.scrollTo(0, 0);
         appBar.setExpanded(true);
     }
 }

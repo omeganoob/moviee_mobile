@@ -1,24 +1,24 @@
 package org.meicode.appfilm.model;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class AllCategory {
+public class MovieCategory {
     String categoryTitle;
     Integer categoryId;
-    private ArrayList<CategoryItem> CateItemm = null;
+    private List<Movie> movieOfCateList;
 
-    public AllCategory(Integer categoryId, String categoryTitle, ArrayList<CategoryItem> cateItemm) {
+    public MovieCategory(Integer categoryId, String categoryTitle, List<Movie> movieOfCateList) {
         this.categoryTitle = categoryTitle;
         this.categoryId = categoryId;
-        CateItemm = cateItemm;
+        this.movieOfCateList = movieOfCateList;
     }
 
-    public ArrayList<CategoryItem> getCateItemm() {
-        return CateItemm;
+    public List<Movie> getCateItemm() {
+        return movieOfCateList;
     }
 
-    public void setCateItemm(ArrayList<CategoryItem> cateItemm) {
-        CateItemm = cateItemm;
+    public void setCateItemm(List<Movie> cateItemm) {
+        movieOfCateList = cateItemm;
     }
 
     public String getCategoryTitle() {
