@@ -1,4 +1,4 @@
-package org.meicode.appfilm;
+package org.meicode.appfilm.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,20 +11,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
-
-import org.meicode.appfilm.model.User;
-import org.meicode.appfilm.retrofitresponse.UserResponse;
-import org.meicode.appfilm.retrofitservices.UserService;
+import org.meicode.appfilm.Utils.AppConstraint;
+import org.meicode.appfilm.Models.User;
+import org.meicode.appfilm.API.retrofitresponse.UserResponse;
+import org.meicode.appfilm.API.retrofitservices.UserService;
+import org.meicode.appfilm.R;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText inputUsername, inputUserpassword;
@@ -67,11 +63,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Đang đăng nhập");
         progressDialog.show();
-        Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                                .addConverterFactory(GsonConverterFactory.create())
-                                .build();
-        retrofit.create(UserService.class).login(inputUsername.getText().toString(), inputUserpassword.getText().toString())
+
+        AppConstraint.retrofit.create(UserService.class).login(inputUsername.getText().toString(), inputUserpassword.getText().toString())
                 .enqueue(new Callback<UserResponse>() {
                     @Override
                     public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {

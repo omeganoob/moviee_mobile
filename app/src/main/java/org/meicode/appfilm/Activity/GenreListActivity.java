@@ -1,21 +1,22 @@
-package org.meicode.appfilm;
+package org.meicode.appfilm.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import org.meicode.appfilm.adapter.SearchResultListAdapter;
-import org.meicode.appfilm.model.Movie;
-import org.meicode.appfilm.retrofitresponse.MovieResponse;
-import org.meicode.appfilm.retrofitservices.MovieService;
+import org.meicode.appfilm.Adapter.GenreListAdapter;
+import org.meicode.appfilm.Utils.AppConstraint;
+import org.meicode.appfilm.Models.Genre;
+import org.meicode.appfilm.API.retrofitresponse.GenreResponse;
+import org.meicode.appfilm.API.retrofitservices.MovieService;
+import org.meicode.appfilm.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,67 +24,55 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MovieOfGenreActivity extends AppCompatActivity {
+public class GenreListActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
-    RecyclerView movieOfGenreList;
-    int genreId;
-    String genreName;
 
-    TextView txtGenreName;
+    RecyclerView genreList;
 
-    SearchResultListAdapter resultListAdapter;
-    List<Movie> resultList;
+    GenreListAdapter genreListAdapter;
+    List<Genre> genres;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movie_of_genre);
-        genreId = getIntent().getIntExtra("genreID", 0);
-        genreName = getIntent().getStringExtra("genreName");
+        setContentView(R.layout.activity_genre_list);
         initViews();
-        getResultList();
-        resultListAdapter = new SearchResultListAdapter(this);
-        resultListAdapter.setResultList(resultList);
 
-        movieOfGenreList.setLayoutManager(new GridLayoutManager(this, 2));
-        movieOfGenreList.setAdapter(resultListAdapter);
+        genreListAdapter = new GenreListAdapter(this);
+        getGenreList();
+        genreListAdapter.setGenres(genres);
+        genreList.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        genreList.setAdapter(genreListAdapter);
+
     }
 
-    private void getResultList() {
-        resultList = new ArrayList<>();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        retrofit.create(MovieService.class).getMovieWithGenre(genreId)
-                .enqueue(new Callback<MovieResponse>() {
+    private void getGenreList() {
+        genres = new ArrayList<>();
+
+        AppConstraint.retrofit.create(MovieService.class).getGenres()
+                .enqueue(new Callback<GenreResponse>() {
                     @Override
-                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                    public void onResponse(Call<GenreResponse> call, Response<GenreResponse> response) {
                         if(response.isSuccessful()) {
                             assert response.body() != null;
-                            if (response.body().getMovies().size() > 0) {
-                                resultList.addAll(response.body().getMovies());
-                                Log.d("resultList", String.valueOf(resultList.size()));
+                            if (response.body().getGenre().size() > 0) {
+                                genres.addAll(response.body().getGenre());
+                                Log.d("NewestList", String.valueOf(genres.size()));
                             }
-                            resultListAdapter.notifyDataSetChanged();
+                            genreListAdapter.notifyDataSetChanged();
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<MovieResponse> call, Throwable t) {
+                    public void onFailure(Call<GenreResponse> call, Throwable t) {
 
                     }
                 });
     }
 
     private void initViews() {
-        movieOfGenreList = findViewById(R.id.movieOfGenreList);
-        txtGenreName = findViewById(R.id.genreName);
-        String title = "Phim ".concat(genreName);
-        txtGenreName.setText(title);
+        genreList = findViewById(R.id.genreList);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.getMenu().setGroupCheckable(0, false, true);
         setUpBottomNavigation();

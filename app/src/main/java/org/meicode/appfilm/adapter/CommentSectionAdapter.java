@@ -1,4 +1,4 @@
-package org.meicode.appfilm.adapter;
+package org.meicode.appfilm.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 import org.meicode.appfilm.R;
-import org.meicode.appfilm.model.Comment;
+import org.meicode.appfilm.Models.Comment;
 
 import java.util.List;
 

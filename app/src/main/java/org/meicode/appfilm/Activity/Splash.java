@@ -1,4 +1,4 @@
-package org.meicode.appfilm;
+package org.meicode.appfilm.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,11 +10,12 @@ import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 
+import org.meicode.appfilm.R;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class Splash extends AppCompatActivity {
-    ImageView splashImg;
     ProgressBar progressBar;
     TextView txtView;
     LottieAnimationView lottie;
@@ -23,13 +24,12 @@ public class Splash extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        splashImg = findViewById(R.id.img);
         progressBar = findViewById(R.id.progress);
         txtView = findViewById(R.id.txtView);
         lottie = findViewById(R.id.lottie);
         progressBar.setProgress(0);
         txtView.setText("");
-        final long period = 50;
+        final long period = 40;
         Timer time = new Timer();
         time.schedule(new TimerTask() {
             @Override
@@ -48,7 +48,6 @@ public class Splash extends AppCompatActivity {
                     time.cancel();
                     Intent intent = new Intent(Splash.this,MainActivity.class);
                     startActivity(intent);
-                    splashImg.animate().translationY(-1600).setDuration(1000).setStartDelay(4000);
                     progressBar.animate().translationY(-1600).setDuration(1000).setStartDelay(4000);
                     txtView.animate().translationY(-1600).setDuration(1000).setStartDelay(4000);
                     lottie.animate().translationY(-1600).setDuration(1000).setStartDelay(4000);

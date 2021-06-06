@@ -1,4 +1,4 @@
-package org.meicode.appfilm.model;
+package org.meicode.appfilm.Models;
 
 import java.util.List;
 

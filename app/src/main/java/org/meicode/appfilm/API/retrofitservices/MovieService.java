@@ -1,12 +1,8 @@
-package org.meicode.appfilm.retrofitservices;
+package org.meicode.appfilm.API.retrofitservices;
 
-import org.meicode.appfilm.model.Genre;
-import org.meicode.appfilm.model.Movie;
-import org.meicode.appfilm.retrofitresponse.CommentResponse;
-import org.meicode.appfilm.retrofitresponse.GenreResponse;
-import org.meicode.appfilm.retrofitresponse.MovieResponse;
-
-import java.util.List;
+import org.meicode.appfilm.API.retrofitresponse.CommentResponse;
+import org.meicode.appfilm.API.retrofitresponse.GenreResponse;
+import org.meicode.appfilm.API.retrofitresponse.MovieResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Field;

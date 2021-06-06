@@ -1,4 +1,4 @@
-package org.meicode.appfilm;
+package org.meicode.appfilm.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,10 +12,12 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import org.meicode.appfilm.adapter.UserFavoriteListAdapter;
-import org.meicode.appfilm.model.Movie;
-import org.meicode.appfilm.retrofitresponse.MovieResponse;
-import org.meicode.appfilm.retrofitservices.MovieService;
+import org.meicode.appfilm.Adapter.UserFavoriteListAdapter;
+import org.meicode.appfilm.Utils.AppConstraint;
+import org.meicode.appfilm.Models.Movie;
+import org.meicode.appfilm.API.retrofitresponse.MovieResponse;
+import org.meicode.appfilm.API.retrofitservices.MovieService;
+import org.meicode.appfilm.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +25,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class FavoriteListActivity extends AppCompatActivity {
 
@@ -57,11 +57,8 @@ public class FavoriteListActivity extends AppCompatActivity {
         FavoriteListItems = new ArrayList<>();
         SharedPreferences userSharedPreferences = getApplicationContext().getSharedPreferences("user", MODE_PRIVATE);
         String id = userSharedPreferences.getString("id", "0");
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        retrofit.create(MovieService.class).getFavorite(Long.parseLong(id))
+
+        AppConstraint.retrofit.create(MovieService.class).getFavorite(Long.parseLong(id))
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {

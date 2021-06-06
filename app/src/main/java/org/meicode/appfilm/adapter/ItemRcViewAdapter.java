@@ -1,4 +1,4 @@
-package org.meicode.appfilm.adapter;
+package org.meicode.appfilm.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,11 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
-import org.meicode.appfilm.MovieDetailsActivity;
+import org.meicode.appfilm.Activity.MovieDetailsActivity;
 import org.meicode.appfilm.R;
-import org.meicode.appfilm.model.Movie;
+import org.meicode.appfilm.Models.Movie;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ItemRcViewAdapter extends RecyclerView.Adapter<ItemRcViewAdapter.ItemViewHolder> {

@@ -1,4 +1,4 @@
-package org.meicode.appfilm;
+package org.meicode.appfilm.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -16,10 +16,12 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import org.meicode.appfilm.adapter.SearchResultListAdapter;
-import org.meicode.appfilm.model.Movie;
-import org.meicode.appfilm.retrofitresponse.MovieResponse;
-import org.meicode.appfilm.retrofitservices.MovieService;
+import org.meicode.appfilm.Adapter.SearchResultListAdapter;
+import org.meicode.appfilm.Utils.AppConstraint;
+import org.meicode.appfilm.Models.Movie;
+import org.meicode.appfilm.API.retrofitresponse.MovieResponse;
+import org.meicode.appfilm.API.retrofitservices.MovieService;
+import org.meicode.appfilm.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +29,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -64,11 +64,8 @@ public class SearchActivity extends AppCompatActivity {
         searchResultListAdapter.notifyDataSetChanged();
         String query = searchQuery.getText().toString();
         Log.d("search query", query);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        retrofit.create(MovieService.class).search(query)
+
+        AppConstraint.retrofit.create(MovieService.class).search(query)
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {

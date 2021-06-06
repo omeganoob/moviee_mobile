@@ -1,9 +1,7 @@
-package org.meicode.appfilm.model;
+package org.meicode.appfilm.Models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
 
 public class Movie {
     @SerializedName("id")

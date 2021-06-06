@@ -1,19 +1,16 @@
-package org.meicode.appfilm.retrofitresponse;
+package org.meicode.appfilm.API.retrofitresponse;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import org.meicode.appfilm.model.Genre;
+public class CheckFavoriteResponse {
 
-import java.util.List;
-
-public class GenreResponse {
     @SerializedName("success")
     @Expose
     private Boolean success;
-    @SerializedName("genre")
+    @SerializedName("isfav")
     @Expose
-    private List<Genre> genre = null;
+    private Boolean isfav;
 
     public Boolean getSuccess() {
         return success;
@@ -23,11 +20,11 @@ public class GenreResponse {
         this.success = success;
     }
 
-    public List<Genre> getGenre() {
-        return genre;
+    public Boolean getIsfav() {
+        return isfav;
     }
 
-    public void setGenre(List<Genre> genre) {
-        this.genre = genre;
+    public void setIsfav(Boolean isfav) {
+        this.isfav = isfav;
     }
 }

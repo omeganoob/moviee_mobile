@@ -1,4 +1,4 @@
-package org.meicode.appfilm.retrofitresponse;
+package org.meicode.appfilm.API.retrofitresponse;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

@@ -1,4 +1,4 @@
-package org.meicode.appfilm.adapter;
+package org.meicode.appfilm.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.meicode.appfilm.R;
-import org.meicode.appfilm.model.MovieCategory;
-import org.meicode.appfilm.model.Movie;
+import org.meicode.appfilm.Models.MovieCategory;
+import org.meicode.appfilm.Models.Movie;
 
 import java.util.List;
 

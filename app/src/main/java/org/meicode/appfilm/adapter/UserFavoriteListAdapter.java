@@ -1,4 +1,4 @@
-package org.meicode.appfilm.adapter;
+package org.meicode.appfilm.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,10 +17,10 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
 
 import org.jetbrains.annotations.NotNull;
-import org.meicode.appfilm.MovieDetailsActivity;
+import org.meicode.appfilm.Activity.MovieDetailsActivity;
 import org.meicode.appfilm.R;
-import org.meicode.appfilm.VideoPlayerActivity;
-import org.meicode.appfilm.model.Movie;
+import org.meicode.appfilm.Activity.VideoPlayerActivity;
+import org.meicode.appfilm.Models.Movie;
 
 import java.util.List;
 

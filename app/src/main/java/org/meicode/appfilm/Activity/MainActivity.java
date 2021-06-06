@@ -1,4 +1,4 @@
-package org.meicode.appfilm;
+package org.meicode.appfilm.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,15 +24,14 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import org.jetbrains.annotations.NotNull;
-import org.meicode.appfilm.adapter.BannerMoviesAdapter;
-import org.meicode.appfilm.adapter.MainRcViewAdapter;
-import org.meicode.appfilm.model.MovieCategory;
-import org.meicode.appfilm.model.Movie;
-import org.meicode.appfilm.model.User;
-import org.meicode.appfilm.retrofitresponse.MovieResponse;
-import org.meicode.appfilm.retrofitresponse.UserResponse;
-import org.meicode.appfilm.retrofitservices.MovieService;
-import org.meicode.appfilm.retrofitservices.UserService;
+import org.meicode.appfilm.Adapter.BannerMoviesAdapter;
+import org.meicode.appfilm.Adapter.MainRcViewAdapter;
+import org.meicode.appfilm.Utils.AppConstraint;
+import org.meicode.appfilm.Models.MovieCategory;
+import org.meicode.appfilm.Models.Movie;
+import org.meicode.appfilm.API.retrofitresponse.MovieResponse;
+import org.meicode.appfilm.API.retrofitservices.MovieService;
+import org.meicode.appfilm.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +41,6 @@ import java.util.TimerTask;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -175,11 +172,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
     private void setNewestList() {
         NewestList = new ArrayList<>();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        retrofit.create(MovieService.class).getNewest()
+        AppConstraint.retrofit.create(MovieService.class).getNewest()
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
@@ -203,11 +196,8 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
     private void setPopularList() {
         PopularList = new ArrayList<>();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        retrofit.create(MovieService.class).getPopular()
+
+        AppConstraint.retrofit.create(MovieService.class).getPopular()
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
@@ -231,11 +221,8 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
     private void setCartoonList() {
         CartoonList = new ArrayList<>();
-        Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                                .addConverterFactory(GsonConverterFactory.create())
-                                .build();
-        retrofit.create(MovieService.class).getMovieWithGenre(4)
+
+        AppConstraint.retrofit.create(MovieService.class).getMovieWithGenre(4)
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
@@ -258,11 +245,8 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
     private void setTopRatedList() {
         TopRatedList = new ArrayList<>();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        retrofit.create(MovieService.class).getTopRated()
+
+        AppConstraint.retrofit.create(MovieService.class).getTopRated()
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
@@ -304,11 +288,11 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
     private void setKidsBannerList() {
         KidsBannerList = new ArrayList<>();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        retrofit.create(MovieService.class).getMovieByAge(9)
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+        AppConstraint.retrofit.create(MovieService.class).getMovieByAge(9)
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
@@ -332,11 +316,11 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
     private void setMovieBannerList() {
         MovieBannerList = new ArrayList<>();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        retrofit.create(MovieService.class).getOnlyMovie()
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+        AppConstraint.retrofit.create(MovieService.class).getOnlyMovie()
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
@@ -359,11 +343,11 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
     private void setTvShowsBannerList() {
         TvShowsBannerList = new ArrayList<>();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        retrofit.create(MovieService.class).getTvShows()
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+        AppConstraint.retrofit.create(MovieService.class).getTvShows()
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
@@ -386,11 +370,11 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
     private void setHomeBannerList() {
         HomeBannerList = new ArrayList<>();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        retrofit.create(MovieService.class).getMovies()
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+        AppConstraint.retrofit.create(MovieService.class).getMovies()
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
@@ -403,12 +387,10 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                             AdapterBanner.notifyDataSetChanged();
                         }
                     }
-
                     @Override
                     public void onFailure(Call<MovieResponse> call, Throwable t) {
 
                     }
-
                 });
     }
 

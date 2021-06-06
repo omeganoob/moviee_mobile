@@ -76,7 +76,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#0F171E"
-            tools:context=".MainActivity">
+            tools:context=".Activity.MainActivity">
 
             <RelativeLayout
                 android:id="@+id/relativeLayout"

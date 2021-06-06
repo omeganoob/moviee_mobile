@@ -1,10 +1,8 @@
-package org.meicode.appfilm.retrofitresponse;
+package org.meicode.appfilm.API.retrofitresponse;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.meicode.appfilm.model.User;
-
-import java.util.List;
+import org.meicode.appfilm.Models.User;
 
 public class UserResponse {
 

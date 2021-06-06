@@ -1,4 +1,4 @@
-package org.meicode.appfilm.adapter;
+package org.meicode.appfilm.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.card.MaterialCardView;
 
 import org.jetbrains.annotations.NotNull;
-import org.meicode.appfilm.MovieOfGenreActivity;
+import org.meicode.appfilm.Activity.MovieOfGenreActivity;
 import org.meicode.appfilm.R;
-import org.meicode.appfilm.model.Genre;
+import org.meicode.appfilm.Models.Genre;
 
 import java.util.List;
 

@@ -14,27 +14,30 @@
         android:theme="@style/Theme.AppFilm"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <activity android:name=".MovieOfGenreActivity" />
-        <activity android:name=".GenreListActivity" />
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".FavoriteListActivity" />
-        <activity android:name=".UserProfileActivity" />
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".Splash">
+        <activity android:name=".Activity.MovieOfGenreActivity" />
+        <activity android:name=".Activity.GenreListActivity" />
+        <activity android:name=".Activity.SearchActivity" />
+        <activity android:name=".Activity.FavoriteListActivity" />
+        <activity android:name=".Activity.UserProfileActivity" />
+        <activity android:name=".Activity.SignUpActivity" />
+        <activity android:name=".Activity.LoginActivity" />
+        <activity android:name=".Activity.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".VideoPlayerActivity" />
-        <activity android:name=".MovieDetailsActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".Activity.VideoPlayerActivity" />
+        <activity android:name=".Activity.MovieDetailsActivity" />
+        <activity android:name=".Activity.MainActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package org.meicode.appfilm;
+package org.meicode.appfilm.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,19 +14,20 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import org.meicode.appfilm.adapter.CommentSectionAdapter;
-import org.meicode.appfilm.model.Comment;
-import org.meicode.appfilm.retrofitresponse.AddFavResponse;
-import org.meicode.appfilm.retrofitresponse.CheckFavoriteResponse;
-import org.meicode.appfilm.retrofitresponse.CommentResponse;
-import org.meicode.appfilm.retrofitservices.MovieService;
-import org.meicode.appfilm.retrofitservices.UserService;
+import org.meicode.appfilm.Adapter.CommentSectionAdapter;
+import org.meicode.appfilm.Utils.AppConstraint;
+import org.meicode.appfilm.Models.Comment;
+import org.meicode.appfilm.API.retrofitresponse.AddFavResponse;
+import org.meicode.appfilm.API.retrofitresponse.CheckFavoriteResponse;
+import org.meicode.appfilm.API.retrofitresponse.CommentResponse;
+import org.meicode.appfilm.API.retrofitservices.MovieService;
+import org.meicode.appfilm.API.retrofitservices.UserService;
+import org.meicode.appfilm.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +36,6 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MovieDetailsActivity extends AppCompatActivity {
 
@@ -128,12 +127,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
             startActivity(login);
             return;
         }
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+
         Log.d("retrofit","build ok");
-        retrofit.create(MovieService.class).comment(mId, user_id, body)
+        AppConstraint.retrofit.create(MovieService.class).comment(mId, user_id, body)
                 .enqueue(new Callback<CommentResponse>() {
                     @Override
                     public void onResponse(Call<CommentResponse> call, Response<CommentResponse> response) {
@@ -157,11 +153,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private void getComments() {
         commentList = new ArrayList<>();
-        Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                                .addConverterFactory(GsonConverterFactory.create())
-                                .build();
-        retrofit.create(MovieService.class).getComments(mId)
+
+        AppConstraint.retrofit.create(MovieService.class).getComments(mId)
                 .enqueue(new Callback<CommentResponse>() {
                     @Override
                     public void onResponse(Call<CommentResponse> call, Response<CommentResponse> response) {
@@ -184,11 +177,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
     }
 
     private void addFavorite(Integer movie_id) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        retrofit.create(UserService.class).addtofav(user_id, movie_id)
+
+        AppConstraint.retrofit.create(UserService.class).addtofav(user_id, movie_id)
                 .enqueue(new Callback<AddFavResponse>() {
                     @Override
                     public void onResponse(Call<AddFavResponse> call, Response<AddFavResponse> response) {
@@ -249,11 +239,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
     }
 
     public void checkIfFav(Integer movie_id) {
-        Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-                                .addConverterFactory(GsonConverterFactory.create())
-                                .build();
-        retrofit.create(UserService.class).isfav(user_id, movie_id)
+
+        AppConstraint.retrofit.create(UserService.class).isfav(user_id, movie_id)
                 .enqueue(new Callback<CheckFavoriteResponse>() {
                     @Override
                     public void onResponse(Call<CheckFavoriteResponse> call, Response<CheckFavoriteResponse> response) {

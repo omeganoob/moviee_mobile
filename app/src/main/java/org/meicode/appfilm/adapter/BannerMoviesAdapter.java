@@ -1,4 +1,4 @@
-package org.meicode.appfilm.adapter;
+package org.meicode.appfilm.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,12 +12,10 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.bumptech.glide.Glide;
 
-import org.meicode.appfilm.MovieDetailsActivity;
+import org.meicode.appfilm.Activity.MovieDetailsActivity;
 import org.meicode.appfilm.R;
-import org.meicode.appfilm.model.BannerMovie;
-import org.meicode.appfilm.model.Movie;
+import org.meicode.appfilm.Models.Movie;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BannerMoviesAdapter extends PagerAdapter {

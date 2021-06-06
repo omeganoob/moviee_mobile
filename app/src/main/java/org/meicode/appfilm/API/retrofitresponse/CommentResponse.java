@@ -1,9 +1,9 @@
-package org.meicode.appfilm.retrofitresponse;
+package org.meicode.appfilm.API.retrofitresponse;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import org.meicode.appfilm.model.Comment;
+import org.meicode.appfilm.Models.Comment;
 
 import java.util.List;
 

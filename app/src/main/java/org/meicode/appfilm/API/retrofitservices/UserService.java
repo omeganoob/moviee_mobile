@@ -1,8 +1,8 @@
-package org.meicode.appfilm.retrofitservices;
+package org.meicode.appfilm.API.retrofitservices;
 
-import org.meicode.appfilm.retrofitresponse.AddFavResponse;
-import org.meicode.appfilm.retrofitresponse.CheckFavoriteResponse;
-import org.meicode.appfilm.retrofitresponse.UserResponse;
+import org.meicode.appfilm.API.retrofitresponse.AddFavResponse;
+import org.meicode.appfilm.API.retrofitresponse.CheckFavoriteResponse;
+import org.meicode.appfilm.API.retrofitresponse.UserResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
