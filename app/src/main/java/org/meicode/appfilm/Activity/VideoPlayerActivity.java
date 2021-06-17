@@ -4,15 +4,20 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.PictureInPictureParams;
+import android.content.pm.PackageManager;
 import android.media.browse.MediaBrowser;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -55,8 +60,8 @@ import at.huber.youtubeExtractor.YtFile;
 public class VideoPlayerActivity extends AppCompatActivity {
     private PlayerView playerV;
     private SimpleExoPlayer SimExo;
-    private static final String FILE_URL = "url";
     ProgressBar progressBar;
+    private ImageButton pipBtn;
 
     boolean playWhenReady = true;
     int currentWindow = 0;
@@ -74,7 +79,45 @@ public class VideoPlayerActivity extends AppCompatActivity {
         playerV = findViewById(R.id.player);
         progressBar = findViewById(R.id.progress_bar);
         url = getIntent().getStringExtra("url");
+        pipBtn = findViewById(R.id.pipBtn);
 
+        pipBtn.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
+                    getPackageManager()
+                            .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+                enterPIP();
+            } else {
+                Toast.makeText(this, "Điện thoại của bạn không hỗ trợ chức năng này", Toast.LENGTH_LONG);
+            }
+        });
+    }
+
+    private void enterPIP() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
+                getPackageManager()
+                        .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+            long videoPosition = SimExo.getCurrentPosition();
+            playerV.setUseController(false);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                PictureInPictureParams.Builder params = new PictureInPictureParams.Builder();
+                this.enterPictureInPictureMode(params.build());
+            } else {
+                this.enterPictureInPictureMode();
+            }
+        }
+    }
+
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode);
+        if (!isInPictureInPictureMode) {
+            playerV.setUseController(true);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         setUpPlayer();
 
         SimExo.addListener(new Player.EventListener() {
@@ -185,6 +228,13 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
         }.extract(url, false, true);
     }
+
+    @Override
+    protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        enterPIP();
+    }
+
     @Override
     protected void onDestroy(){
         super.onDestroy();

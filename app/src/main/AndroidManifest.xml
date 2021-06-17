@@ -28,7 +28,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.VideoPlayerActivity" />
+        <activity android:name=".Activity.VideoPlayerActivity"
+            android:supportsPictureInPicture="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            tools:targetApi="n"/>
         <activity android:name=".Activity.MovieDetailsActivity" />
         <activity android:name=".Activity.MainActivity" />
 
