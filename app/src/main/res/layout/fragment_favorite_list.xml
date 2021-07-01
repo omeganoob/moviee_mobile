@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/themeDark"
-    tools:context=".Activity.FavoriteListActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Fragment.FavoriteListFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -39,15 +39,5 @@
             app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:layout_gravity="bottom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/bottom_navigation"
-        android:background="@color/bottomBar"
-        app:labelVisibilityMode="unlabeled"
-        app:itemTextColor="@drawable/icon_selector"
-        app:itemIconTint="@drawable/icon_selector"
-        app:menu="@menu/bottom_navigation_menu"/>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>

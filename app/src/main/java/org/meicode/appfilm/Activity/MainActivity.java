@@ -1,9 +1,12 @@
 package org.meicode.appfilm.Activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentContainerView;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +15,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +30,9 @@ import com.google.android.material.tabs.TabLayout;
 import org.jetbrains.annotations.NotNull;
 import org.meicode.appfilm.Adapter.BannerMoviesAdapter;
 import org.meicode.appfilm.Adapter.MainRcViewAdapter;
+import org.meicode.appfilm.Fragment.FavoriteListFragment;
+import org.meicode.appfilm.Fragment.HomeFragment;
+import org.meicode.appfilm.Fragment.UserProfileFragment;
 import org.meicode.appfilm.Utils.AppConstraint;
 import org.meicode.appfilm.Models.MovieCategory;
 import org.meicode.appfilm.Models.Movie;
@@ -42,79 +49,93 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     BottomNavigationView bottomNavigationView;
     FloatingActionButton fab;
 
-    BannerMoviesAdapter AdapterBanner;
-    TabLayout IndicatorTab, categoryTab;
-    ViewPager banner;
     List<Movie> HomeBannerList;
     List<Movie> TvShowsBannerList;
     List<Movie> MovieBannerList;
     List<Movie> KidsBannerList;
 
-    MainRcViewAdapter AdapterRcView;
-    RecyclerView MainRcView;
-    List<MovieCategory> CategoryList;
-    NestedScrollView nestedScroll;
-    AppBarLayout appBar;
-
     List<Movie> TopRatedList, PopularList, NewestList, CartoonList;
-
+    HomeFragment homeFragment;
+    FavoriteListFragment favFragment;
+    UserProfileFragment profileFragment;
+    DataLoadedListener homeFragmentListener;
     private AppBarConfiguration mAppBarConfiguration;
+    FragmentManager fragmentManager;
+    private FragmentContainerView fragment;
+    private boolean isLoaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        fragmentManager = getSupportFragmentManager();
+        homeFragment = new HomeFragment(this);
+        homeFragmentListener = homeFragment;
+
+        favFragment = new FavoriteListFragment(this);
+        profileFragment = new UserProfileFragment(this);
 
         initViews();
         setUpNavigationDrawer();
         setUpBottomNavigation();
-        setUpBannerList();
-        setUpCatMovieList();
+        if (savedInstanceState == null && !isLoaded) {
+            setUpBannerList();
+            setUpCatMovieList();
+            isLoaded = true;
+            homeFragment.OnDataLoaded(
+                    HomeBannerList,
+                    TvShowsBannerList,
+                    MovieBannerList,
+                    KidsBannerList,
+                    TopRatedList,
+                    PopularList,
+                    NewestList,
+                    CartoonList
+            );
+        }
 
         fab.setOnClickListener(v -> {
             Intent intent = new Intent(this, SearchActivity.class);
             startActivity(intent);
         });
+    }
 
-        categoryTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                switch (tab.getPosition()) {
-                    case 1:
-                        setScrollDefaultState();
-                        setAdapterBanner(TvShowsBannerList);
-                        return;
-                    case 2:
-                        setScrollDefaultState();
-                        setAdapterBanner(MovieBannerList);
-                        return;
-                    case 3:
-                        setScrollDefaultState();
-                        setAdapterBanner(KidsBannerList);
-                        return;
-                    default:
-                        setScrollDefaultState();
-                        setAdapterBanner(HomeBannerList);
-                }
-            }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(!homeFragment.isAdded()) {
+            fragmentManager.beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(R.id.fragment, homeFragment, null)
+                    .addToBackStack(null)
+                    .commit();
+        }
+        Log.d("Main activity", "restored without load");
+    }
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isLoaded = true;
+        FavoriteListFragment.isLoaded = false;
+    }
 
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-        CategoryList = getCateList();
-        setAdapterRcView(CategoryList);
+    public interface DataLoadedListener {
+        public void OnDataLoaded(
+                List<Movie> HomeBannerList,
+                List<Movie> TvShowsBannerList,
+                List<Movie> MovieBannerList,
+                List<Movie> KidsBannerList,
+                List<Movie> TopRatedList,
+                List<Movie> PopularList,
+                List<Movie> NewestList,
+                List<Movie> CartoonList
+        );
     }
 
     private void setUpBottomNavigation() {
@@ -125,20 +146,30 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                 case R.id.menu_item_acc:
                     if (isLoggin) {
                         // neu da dang nhap
-                        Intent userProfileIntent = new Intent(this, UserProfileActivity.class);
-                        startActivity(userProfileIntent);
+                        fragmentManager.beginTransaction()
+                                .setReorderingAllowed(true)
+                                .replace(R.id.fragment, profileFragment, null)
+                                .addToBackStack(null)
+                                .commit();
                     } else {
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
                     }
                     return true;
                 case R.id.menu_item_home:
-                    Toast.makeText(this, "Bạn đang ở đây rồi", Toast.LENGTH_SHORT).show();
+                    fragmentManager.beginTransaction()
+                            .setReorderingAllowed(true)
+                            .replace(R.id.fragment, homeFragment, null)
+                            .addToBackStack(null)
+                            .commit();
                     return true;
                 case R.id.menu_item_fav:
                     if (isLoggin) {
                         // neu da dang nhap
-                        Intent userProfileIntent = new Intent(this, FavoriteListActivity.class);
-                        startActivity(userProfileIntent);
+                        fragmentManager.beginTransaction()
+                                .setReorderingAllowed(true)
+                                .replace(R.id.fragment, favFragment, null)
+                                .addToBackStack(null)
+                                .commit();
                     } else {
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
                     }
@@ -176,21 +207,19 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                        if(response.isSuccessful()) {
+                        if (response.isSuccessful()) {
                             assert response.body() != null;
                             if (response.body().getMovies().size() > 0) {
                                 NewestList.addAll(response.body().getMovies());
                                 Log.d("NewestList", String.valueOf(NewestList.size()));
                             }
-                            AdapterBanner.notifyDataSetChanged();
+                            HomeFragment.AdapterRcView.notifyDataSetChanged();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<MovieResponse> call, Throwable t) {
-
                     }
-
                 });
     }
 
@@ -201,13 +230,13 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                        if(response.isSuccessful()) {
+                        if (response.isSuccessful()) {
                             assert response.body() != null;
                             if (response.body().getMovies().size() > 0) {
                                 PopularList.addAll(response.body().getMovies());
                                 Log.d("PopularList", String.valueOf(PopularList.size()));
                             }
-                            AdapterBanner.notifyDataSetChanged();
+                            HomeFragment.AdapterRcView.notifyDataSetChanged();
                         }
                     }
 
@@ -226,13 +255,13 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                        if(response.isSuccessful()) {
+                        if (response.isSuccessful()) {
                             assert response.body() != null;
                             if (response.body().getMovies().size() > 0) {
                                 CartoonList.addAll(response.body().getMovies());
                                 Log.d("HomeBannerList", String.valueOf(CartoonList.size()));
                             }
-                            AdapterRcView.notifyDataSetChanged();
+                            HomeFragment.AdapterRcView.notifyDataSetChanged();
                         }
                     }
 
@@ -250,13 +279,13 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                        if(response.isSuccessful()) {
+                        if (response.isSuccessful()) {
                             assert response.body() != null;
                             if (response.body().getMovies().size() > 0) {
                                 TopRatedList.addAll(response.body().getMovies());
                                 Log.d("TopRatedList", String.valueOf(TopRatedList.size()));
                             }
-                            AdapterBanner.notifyDataSetChanged();
+                            HomeFragment.AdapterRcView.notifyDataSetChanged();
                         }
                     }
 
@@ -268,41 +297,26 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                 });
     }
 
-    private List<MovieCategory> getCateList() {
-        List<MovieCategory> list = new ArrayList<>();
-        list.add(new MovieCategory(1, "PHIM ĐỀ CỬ", TopRatedList));
-        list.add(new MovieCategory(2, "PHIM PHỔ BIẾN", PopularList));
-        list.add(new MovieCategory(3, "PHIM MỚI CẬP NHẬT", NewestList));
-        list.add(new MovieCategory(4, "PHIM HOẠT HÌNH", CartoonList));
-        return list;
-    }
-
     private void setUpBannerList() {
-        //Home
         setHomeBannerList();
         setTvShowsBannerList();
         setMovieBannerList();
         setKidsBannerList();
-        setAdapterBanner(HomeBannerList);
     }
 
     private void setKidsBannerList() {
         KidsBannerList = new ArrayList<>();
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
         AppConstraint.retrofit.create(MovieService.class).getMovieByAge(9)
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                        if(response.isSuccessful()) {
+                        if (response.isSuccessful()) {
                             assert response.body() != null;
                             if (response.body().getMovies().size() > 0) {
                                 KidsBannerList.addAll(response.body().getMovies());
                                 Log.d("KidsBannerList", String.valueOf(KidsBannerList.size()));
                             }
-                            AdapterBanner.notifyDataSetChanged();
+                            HomeFragment.AdapterBanner.notifyDataSetChanged();
                         }
                     }
 
@@ -316,21 +330,17 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
     private void setMovieBannerList() {
         MovieBannerList = new ArrayList<>();
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
         AppConstraint.retrofit.create(MovieService.class).getOnlyMovie()
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                        if(response.isSuccessful()) {
+                        if (response.isSuccessful()) {
                             assert response.body() != null;
                             if (response.body().getMovies().size() > 0) {
                                 MovieBannerList.addAll(response.body().getMovies());
                                 Log.d("MovieBannerList", String.valueOf(MovieBannerList.size()));
                             }
-                            AdapterBanner.notifyDataSetChanged();
+                            HomeFragment.AdapterBanner.notifyDataSetChanged();
                         }
                     }
 
@@ -343,23 +353,20 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
     private void setTvShowsBannerList() {
         TvShowsBannerList = new ArrayList<>();
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
         AppConstraint.retrofit.create(MovieService.class).getTvShows()
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                        if(response.isSuccessful()) {
+                        if (response.isSuccessful()) {
                             assert response.body() != null;
                             if (response.body().getMovies().size() > 0) {
                                 TvShowsBannerList.addAll(response.body().getMovies());
                                 Log.d("TvShowsBannerList", String.valueOf(TvShowsBannerList.size()));
                             }
-                            AdapterBanner.notifyDataSetChanged();
+                            HomeFragment.AdapterBanner.notifyDataSetChanged();
                         }
                     }
+
                     @Override
                     public void onFailure(Call<MovieResponse> call, Throwable t) {
 
@@ -370,23 +377,20 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
     private void setHomeBannerList() {
         HomeBannerList = new ArrayList<>();
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("http://192.168.56.1/moviee/public/api/v1/")
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
         AppConstraint.retrofit.create(MovieService.class).getMovies()
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                        if(response.isSuccessful()) {
+                        if (response.isSuccessful()) {
                             assert response.body() != null;
                             if (response.body().getMovies().size() > 0) {
                                 HomeBannerList.addAll(response.body().getMovies());
                                 Log.d("HomeBannerList", String.valueOf(HomeBannerList.size()));
                             }
-                            AdapterBanner.notifyDataSetChanged();
+                            HomeFragment.AdapterBanner.notifyDataSetChanged();
                         }
                     }
+
                     @Override
                     public void onFailure(Call<MovieResponse> call, Throwable t) {
 
@@ -395,23 +399,9 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
     }
 
     private void initViews() {
+        fragment = findViewById(R.id.fragment);
         fab = findViewById(R.id.toSearchMovie);
-        IndicatorTab = findViewById(R.id.indicator);
-        categoryTab = findViewById(R.id.tabLayout);
-        nestedScroll = findViewById(R.id.nested_Scroll);
-        appBar = findViewById(R.id.appbar);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-    }
-
-    private void setAdapterBanner(List<Movie> bannerList) {
-        banner = findViewById(R.id.banner_viewPager);
-        AdapterBanner = new BannerMoviesAdapter(this);
-        AdapterBanner.setBannerList(bannerList);
-        banner.setAdapter(AdapterBanner);
-        IndicatorTab.setupWithViewPager(banner);
-        Timer slider = new Timer();
-        slider.scheduleAtFixedRate(new AutoSlider(), 4000, 6000);
-        IndicatorTab.setupWithViewPager(banner, true);
     }
 
     @Override
@@ -421,7 +411,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         switch (item.getItemId()) {
             case R.id.menu_item_home:
                 startActivity(new Intent(this, MainActivity.class));
-                break;
+                return true;
             case R.id.menu_item_fav:
                 if (isLoggin) {
                     // neu da dang nhap
@@ -430,7 +420,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                 } else {
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));
                 }
-                break;
+                return true;
             case R.id.menu_item_acc:
                 if (isLoggin) {
                     // neu da dang nhap
@@ -439,43 +429,12 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                 } else {
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));
                 }
-                break;
+                return true;
             case R.id.menu_item_genre:
                 Intent intent = new Intent(this, GenreListActivity.class);
                 startActivity(intent);
-                break;
+                return true;
         }
         return true;
-    }
-
-    class AutoSlider extends TimerTask {
-
-        @Override
-        public void run() {
-            MainActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (banner.getCurrentItem() < HomeBannerList.size() - 1) {
-                        banner.setCurrentItem(banner.getCurrentItem() + 1);
-                    } else {
-                        banner.setCurrentItem(0);
-                    }
-                }
-            });
-        }
-    }
-
-    public void setAdapterRcView(List<MovieCategory> CateList) {
-        MainRcView = findViewById(R.id.main_rcview);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
-        MainRcView.setLayoutManager(layoutManager);
-        AdapterRcView = new MainRcViewAdapter(this, CateList);
-        MainRcView.setAdapter(AdapterRcView);
-    }
-
-    private void setScrollDefaultState() {
-        nestedScroll.fullScroll(View.FOCUS_UP);
-        nestedScroll.scrollTo(0, 0);
-        appBar.setExpanded(true);
     }
 }

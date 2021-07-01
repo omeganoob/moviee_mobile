@@ -9,4 +9,5 @@
     <string name="search_empty">Không tìm thấy gì hết!</string>
     <string name="genre_list_title">Danh sách thể loại</string>
     <string name="comment_title">Bình luận</string>
+    <!-- TODO: Remove or change this placeholder text -->
 </resources>
