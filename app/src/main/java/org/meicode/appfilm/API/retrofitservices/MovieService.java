@@ -16,8 +16,8 @@ public interface MovieService {
     @GET("movie/all")
     Call<MovieResponse> getMovies();
 
-    @GET("movie/genre/{genre}")
-    Call<MovieResponse> getMovieWithGenre(@Path("genre") int genre);
+    @GET("movie/bygenre")
+    Call<MovieResponse> getMovieWithGenre(@Query("genres") String genres);
 
     @GET("movie/age/{age}")
     Call<MovieResponse> getMovieByAge(@Path("age") int age);

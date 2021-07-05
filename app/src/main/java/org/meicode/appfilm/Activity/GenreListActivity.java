@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
 
 import org.meicode.appfilm.Adapter.GenreListAdapter;
 import org.meicode.appfilm.Utils.AppConstraint;
@@ -19,6 +20,7 @@ import org.meicode.appfilm.API.retrofitservices.MovieService;
 import org.meicode.appfilm.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
@@ -29,18 +31,25 @@ public class GenreListActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
 
     RecyclerView genreList;
-
+    SharedPreferences sharedPreferences;
     GenreListAdapter genreListAdapter;
     List<Genre> genres;
+    public static HashMap<String, Integer> nameAndIDs = new HashMap<String, Integer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_genre_list);
         initViews();
-
         genreListAdapter = new GenreListAdapter(this);
         getGenreList();
+
+        Log.d("nameAndIDs", nameAndIDs.size()+"");
+        sharedPreferences = getSharedPreferences("listOfGenre", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("list", new Gson().toJson(nameAndIDs));
+        editor.apply();
+
         genreListAdapter.setGenres(genres);
         genreList.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         genreList.setAdapter(genreListAdapter);
@@ -49,7 +58,6 @@ public class GenreListActivity extends AppCompatActivity {
 
     private void getGenreList() {
         genres = new ArrayList<>();
-
         AppConstraint.retrofit.create(MovieService.class).getGenres()
                 .enqueue(new Callback<GenreResponse>() {
                     @Override
@@ -59,6 +67,10 @@ public class GenreListActivity extends AppCompatActivity {
                             if (response.body().getGenre().size() > 0) {
                                 genres.addAll(response.body().getGenre());
                                 Log.d("NewestList", String.valueOf(genres.size()));
+                                for (Genre g: genres) {
+                                    nameAndIDs.put(g.getName(), g.getId());
+                                }
+                                Log.d("nameAndIDs", nameAndIDs.size()+"");
                             }
                             genreListAdapter.notifyDataSetChanged();
                         }

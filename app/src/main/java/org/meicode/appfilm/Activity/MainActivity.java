@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.menu_item_home, R.id.menu_item_fav, R.id.menu_item_acc, R.id.menu_item_genre)
+                R.id.menu_item_refresh, R.id.menu_item_genre)
                 .setOpenableLayout(drawer)
                 .build();
     }
@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setCartoonList() {
         CartoonList = new ArrayList<>();
 
-        AppConstraint.retrofit.create(MovieService.class).getMovieWithGenre(4)
+        AppConstraint.retrofit.create(MovieService.class).getMovieWithGenre("4")
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
@@ -409,26 +409,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         SharedPreferences loginSharedPreferences = getApplicationContext().getSharedPreferences("isLoggedIn", MODE_PRIVATE);
         Boolean isLoggin = loginSharedPreferences.getBoolean("isLoggedIn", false);
         switch (item.getItemId()) {
-            case R.id.menu_item_home:
+            case R.id.menu_item_refresh:
                 startActivity(new Intent(this, MainActivity.class));
-                return true;
-            case R.id.menu_item_fav:
-                if (isLoggin) {
-                    // neu da dang nhap
-                    Intent userProfileIntent = new Intent(this, FavoriteListActivity.class);
-                    startActivity(userProfileIntent);
-                } else {
-                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                }
-                return true;
-            case R.id.menu_item_acc:
-                if (isLoggin) {
-                    // neu da dang nhap
-                    Intent userProfileIntent = new Intent(this, UserProfileActivity.class);
-                    startActivity(userProfileIntent);
-                } else {
-                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                }
                 return true;
             case R.id.menu_item_genre:
                 Intent intent = new Intent(this, GenreListActivity.class);
