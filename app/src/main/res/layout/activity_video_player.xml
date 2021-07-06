@@ -17,7 +17,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:shutter_background_color="@color/black"
         app:controller_layout_id="@layout/customer_controller">
-
     </com.google.android.exoplayer2.ui.PlayerView>
 
     <ProgressBar

@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.AsyncListDiffer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -41,6 +42,7 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
     public void onBindViewHolder(@NonNull @NotNull SearchResultListAdapter.Holder holder, int position) {
         Movie movie = resultList.get(position);
         holder.itemTitle.setText(movie.getTitle());
+
         Glide.with(context)
                 .asBitmap()
                 .load(movie.getPoster())
@@ -56,6 +58,10 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
             i.putExtra("movieRate", String.valueOf(movie.getRated()));
             context.startActivity(i);
         });
+    }
+
+    public int getPosition() {
+        return this.getPosition();
     }
 
     @Override

@@ -43,13 +43,6 @@ public class GenreListActivity extends AppCompatActivity {
         initViews();
         genreListAdapter = new GenreListAdapter(this);
         getGenreList();
-
-        Log.d("nameAndIDs", nameAndIDs.size()+"");
-        sharedPreferences = getSharedPreferences("listOfGenre", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("list", new Gson().toJson(nameAndIDs));
-        editor.apply();
-
         genreListAdapter.setGenres(genres);
         genreList.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         genreList.setAdapter(genreListAdapter);
@@ -70,7 +63,16 @@ public class GenreListActivity extends AppCompatActivity {
                                 for (Genre g: genres) {
                                     nameAndIDs.put(g.getName(), g.getId());
                                 }
+                                /**
+                                 * put name adn id of genre to sharedpreference
+                                 */
                                 Log.d("nameAndIDs", nameAndIDs.size()+"");
+                                sharedPreferences = getSharedPreferences("listOfGenre", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("list", new Gson().toJson(nameAndIDs));
+                                editor.apply();
+                                Log.d("Save istOfGenre", sharedPreferences.getString("list", "empty"));
+
                             }
                             genreListAdapter.notifyDataSetChanged();
                         }

@@ -69,7 +69,27 @@ public class MovieOfGenreActivity extends AppCompatActivity {
         genreIDs = getIntent().getIntExtra("genreID", 0) + "";
         genreName = getIntent().getStringExtra("genreName");
         initViews();
+
+        //Call getResultList on first run
         getResultList(genreIDs);
+        getTags();
+        //Render tags
+        renderChips();
+
+        resultListAdapter = new SearchResultListAdapter(this);
+        resultListAdapter.setResultList(resultList);
+
+        movieOfGenreList.setLayoutManager(new GridLayoutManager(this, 2));
+        movieOfGenreList.setAdapter(resultListAdapter);
+        expander.setOnClickListener(v -> {
+            expand();
+        });
+    }
+
+    private void getTags() {
+        /**
+         * Get the list of name and id of genres form sharedpreference and put to hash map
+         */
         Gson gson = new Gson();
         Type type = new TypeToken<HashMap<String, Integer>>() {
         }.getType();
@@ -78,35 +98,23 @@ public class MovieOfGenreActivity extends AppCompatActivity {
         Log.d("json", json);
         listOfGenre = gson.fromJson(json, type);
         Log.d("listOfGenre", listOfGenre.size() + "");
-
-        getChips();
-
-        resultListAdapter = new SearchResultListAdapter(this);
-        resultListAdapter.setResultList(resultList);
-
-        movieOfGenreList.setLayoutManager(new GridLayoutManager(this, 2));
-        movieOfGenreList.setAdapter(resultListAdapter);
-
-        expander.setOnClickListener(v -> {
-            expand();
-        });
     }
 
     private void expand() {
         isExpanded = !isExpanded;
-        if(isExpanded) {
+        if (isExpanded) {
             TransitionManager.beginDelayedTransition(mogParent);
             genreChips.setVisibility(View.VISIBLE);
             expander.setImageResource(R.drawable.ic_round_arrow_drop_up);
         }
-        if(!isExpanded) {
+        if (!isExpanded) {
             TransitionManager.beginDelayedTransition(mogParent);
             genreChips.setVisibility(View.GONE);
             expander.setImageResource(R.drawable.ic_round_arrow_drop_down);
         }
     }
 
-    private void getChips() {
+    private void renderChips() {
         LayoutInflater inflater = LayoutInflater.from(this);
         Iterator iterator = listOfGenre.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -125,9 +133,9 @@ public class MovieOfGenreActivity extends AppCompatActivity {
                     genreIDs = genreIDs.replace("," + id, "");
                     genreIDs = genreIDs.replace(id, "");
                 } else {
-                    if (genreIDs.length()<1) {
+                    if (genreIDs.length() < 1) {
                         genreIDs += (id);
-                    } else  {
+                    } else {
                         genreIDs += ("," + id);
                     }
                 }
